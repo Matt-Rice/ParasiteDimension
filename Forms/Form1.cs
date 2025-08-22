@@ -1,4 +1,5 @@
 
+using System.Data.Entity;
 using Thing.Models;
 namespace Thing
 {
@@ -11,7 +12,13 @@ namespace Thing
 
         private void editButton_Click(object sender, EventArgs e)
         {
-            Battle? selectedBattle = battleListBox.SelectedItem as Battle;
+            var selectedBattle = battleListBox.SelectedItem as Battle;
+            if (selectedBattle == null)
+            {
+                MessageBox.Show("Please select a battle to edit.");
+                return;
+            }
+
             OpenModal(selectedBattle);
         }
 
@@ -28,11 +35,11 @@ namespace Thing
 
         private void newButton_Click(object sender, EventArgs e)
         {
-            int battleId;
+            Battle newBattle;
 
             using (var context = new AppDbContext())
             {
-                var newBattle = new Battle()
+                newBattle = new Battle()
                 {
                     Name = "New Battle",
                     EnemyList = new List<Enemy>()
@@ -40,9 +47,8 @@ namespace Thing
 
                 context.Battles.Add(newBattle);
                 context.SaveChanges();
-                battleId = newBattle.BattleId;
             }
-            OpenModal(battleId);
+            OpenModal(newBattle);
         }
 
 
@@ -52,10 +58,10 @@ namespace Thing
             LoadBattles();
         }
 
-        public void OpenModal(int battleId)
+        public void OpenModal(Battle battle)
         {
 
-            using (var modal = new addForm(selectedBattle))
+            using (var modal = new addForm(battle))
             {
                 var result = modal.ShowDialog();
 
@@ -78,6 +84,7 @@ namespace Thing
             using var db = new AppDbContext();
 
             var battles = db.Battles
+                .Include(b => b.EnemyList)
                 .OrderBy(b => b.Name)
                 .ToList();
 

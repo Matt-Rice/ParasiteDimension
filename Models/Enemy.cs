@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,8 +10,11 @@ namespace Thing.Models
 {
     public class Enemy
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EnemyId { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string DisplayName => CurrentWounds >= MaxWounds ? $"{Name} (Dead)" : Name;
         public int MaxHp { get; set; }
         public int CurrentHp { get; set; }
         public int MaxWounds { get; set; }

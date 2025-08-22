@@ -30,15 +30,17 @@
         {
             label1 = new Label();
             label2 = new Label();
-            SkillListBox = new ListBox();
+            skillListBox = new ListBox();
             label3 = new Label();
             addButton = new Button();
             skillPanel = new Panel();
-            skillNameTextBox = new TextBox();
-            label4 = new Label();
-            label5 = new Label();
+            saveSkillButton = new Button();
             valueTextBox = new TextBox();
-            saveButton = new Button();
+            label5 = new Label();
+            label4 = new Label();
+            skillNameTextBox = new TextBox();
+            deleteButton = new Button();
+            closeButton = new Button();
             skillPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -60,15 +62,15 @@
             label2.TabIndex = 1;
             label2.Text = "Skills";
             // 
-            // SkillListBox
+            // skillListBox
             // 
-            SkillListBox.FormattingEnabled = true;
-            SkillListBox.ItemHeight = 25;
-            SkillListBox.Location = new Point(27, 97);
-            SkillListBox.Name = "SkillListBox";
-            SkillListBox.Size = new Size(180, 379);
-            SkillListBox.TabIndex = 2;
-            SkillListBox.SelectedIndexChanged += SkillListBox_SelectedIndexChanged;
+            skillListBox.FormattingEnabled = true;
+            skillListBox.ItemHeight = 25;
+            skillListBox.Location = new Point(27, 97);
+            skillListBox.Name = "skillListBox";
+            skillListBox.Size = new Size(180, 379);
+            skillListBox.TabIndex = 2;
+            skillListBox.SelectedIndexChanged += SkillListBox_SelectedIndexChanged;
             // 
             // label3
             // 
@@ -81,7 +83,7 @@
             // 
             // addButton
             // 
-            addButton.Location = new Point(128, 482);
+            addButton.Location = new Point(27, 482);
             addButton.Name = "addButton";
             addButton.Size = new Size(79, 34);
             addButton.TabIndex = 4;
@@ -91,7 +93,7 @@
             // 
             // skillPanel
             // 
-            skillPanel.Controls.Add(saveButton);
+            skillPanel.Controls.Add(saveSkillButton);
             skillPanel.Controls.Add(valueTextBox);
             skillPanel.Controls.Add(label5);
             skillPanel.Controls.Add(label4);
@@ -102,22 +104,23 @@
             skillPanel.TabIndex = 6;
             skillPanel.Visible = false;
             // 
-            // skillNameTextBox
+            // saveSkillButton
             // 
-            skillNameTextBox.Location = new Point(12, 59);
-            skillNameTextBox.Name = "skillNameTextBox";
-            skillNameTextBox.PlaceholderText = "Skill Name";
-            skillNameTextBox.Size = new Size(128, 31);
-            skillNameTextBox.TabIndex = 0;
+            saveSkillButton.Location = new Point(96, 132);
+            saveSkillButton.Name = "saveSkillButton";
+            saveSkillButton.Size = new Size(112, 34);
+            saveSkillButton.TabIndex = 4;
+            saveSkillButton.Text = "Save Skill";
+            saveSkillButton.UseVisualStyleBackColor = true;
+            saveSkillButton.Click += saveButton_Click;
             // 
-            // label4
+            // valueTextBox
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(24, 20);
-            label4.Name = "label4";
-            label4.Size = new Size(95, 25);
-            label4.TabIndex = 1;
-            label4.Text = "Skill Name";
+            valueTextBox.Location = new Point(170, 59);
+            valueTextBox.Name = "valueTextBox";
+            valueTextBox.PlaceholderText = "Value";
+            valueTextBox.Size = new Size(128, 31);
+            valueTextBox.TabIndex = 3;
             // 
             // label5
             // 
@@ -128,33 +131,53 @@
             label5.TabIndex = 2;
             label5.Text = "Value";
             // 
-            // valueTextBox
+            // label4
             // 
-            valueTextBox.Location = new Point(170, 59);
-            valueTextBox.Name = "valueTextBox";
-            valueTextBox.PlaceholderText = "Value";
-            valueTextBox.Size = new Size(128, 31);
-            valueTextBox.TabIndex = 3;
+            label4.AutoSize = true;
+            label4.Location = new Point(24, 20);
+            label4.Name = "label4";
+            label4.Size = new Size(95, 25);
+            label4.TabIndex = 1;
+            label4.Text = "Skill Name";
             // 
-            // saveButton
+            // skillNameTextBox
             // 
-            saveButton.Location = new Point(96, 132);
-            saveButton.Name = "saveButton";
-            saveButton.Size = new Size(112, 34);
-            saveButton.TabIndex = 4;
-            saveButton.Text = "Save";
-            saveButton.UseVisualStyleBackColor = true;
-            saveButton.Click += saveButton_Click;
+            skillNameTextBox.Location = new Point(12, 59);
+            skillNameTextBox.Name = "skillNameTextBox";
+            skillNameTextBox.PlaceholderText = "Skill Name";
+            skillNameTextBox.Size = new Size(128, 31);
+            skillNameTextBox.TabIndex = 0;
+            // 
+            // deleteButton
+            // 
+            deleteButton.Location = new Point(130, 482);
+            deleteButton.Name = "deleteButton";
+            deleteButton.Size = new Size(77, 34);
+            deleteButton.TabIndex = 7;
+            deleteButton.Text = "Delete";
+            deleteButton.UseVisualStyleBackColor = true;
+            // 
+            // closeButton
+            // 
+            closeButton.Location = new Point(606, 494);
+            closeButton.Name = "closeButton";
+            closeButton.Size = new Size(78, 34);
+            closeButton.TabIndex = 8;
+            closeButton.Text = "Close";
+            closeButton.UseVisualStyleBackColor = true;
+            closeButton.Click += closeButton_Click;
             // 
             // SkillForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(696, 540);
+            Controls.Add(closeButton);
+            Controls.Add(deleteButton);
             Controls.Add(skillPanel);
             Controls.Add(addButton);
             Controls.Add(label3);
-            Controls.Add(SkillListBox);
+            Controls.Add(skillListBox);
             Controls.Add(label2);
             Controls.Add(label1);
             Name = "SkillForm";
@@ -170,7 +193,7 @@
 
         private Label label1;
         private Label label2;
-        private ListBox SkillListBox;
+        private ListBox skillListBox;
         private Label label3;
         private Button addButton;
         private Panel skillPanel;
@@ -178,6 +201,8 @@
         private Label label5;
         private Label label4;
         private TextBox skillNameTextBox;
-        private Button saveButton;
+        private Button saveSkillButton;
+        private Button deleteButton;
+        private Button closeButton;
     }
 }
