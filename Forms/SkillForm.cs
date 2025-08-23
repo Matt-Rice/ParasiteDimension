@@ -38,6 +38,7 @@ namespace Thing
                 {
                     skillNameTextBox.Text = selectedSkill.Name;
                     valueTextBox.Text = selectedSkill.Value;
+                    skillPanel.Visible = true; // Show the skill details panel
                 }
                 else
                 {
@@ -55,7 +56,29 @@ namespace Thing
             try
             {
                 var selectedSkill = skillListBox.SelectedItem as Skill;
-
+                if (selectedSkill != null)
+                {
+                    selectedSkill.Name = skillNameTextBox.Text;
+                    selectedSkill.Value = valueTextBox.Text;
+                    using (var context = new AppDbContext())
+                    {
+                        bool success = context.UpdateSkill(selectedSkill);
+                        if (!success)
+                        {
+                            MessageBox.Show("Failed to save skill. Please try again.");
+                            return;
+                        }
+                    }
+                    RefreshSkillList(); // Refresh the skill list in the UI
+                }
+                else
+                {
+                    MessageBox.Show("No skill selected to save.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving skill: " + ex.Message);
             }
         }
 
@@ -63,7 +86,7 @@ namespace Thing
         {
             Skill newSkill = new Skill
             {
-                Name = skillNameTextBox.Text,
+                Name = "New Skill",
                 EnemyId = _selectedEnemy.EnemyId,
                 Enemy = _selectedEnemy
             };
@@ -92,6 +115,7 @@ namespace Thing
         {
             try
             {
+                _selectedEnemy.UpdateSkillList(); // Ensure the enemy's skill list is up to date before closing
                 using (var context = new AppDbContext())
                 {
                     var enemy = context.GetEnemyById(_selectedEnemy.EnemyId);
@@ -114,12 +138,46 @@ namespace Thing
             }
         }
 
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            var selectedSkill = skillListBox.SelectedItem as Skill;
+            if (selectedSkill != null)
+            {
+                try
+                {
+                    using (var context = new AppDbContext())
+                    {
+                        bool success = context.DeleteSkillByID(selectedSkill.SkillId);
+                        if (!success)
+                        {
+                            MessageBox.Show("Failed to delete skill. Please try again.");
+                            return;
+                        }
+                    }
+                    skillPanel.Visible = false; // Hide the skill details panel
+                    _selectedEnemy.SkillList.Remove(selectedSkill); // Update the enemy's skill list in memory
+                    RefreshSkillList(); // Refresh the skill list in the UI
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error deleting skill: " + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No skill selected to delete.");
+            }
+        }
+
         private void RefreshSkillList()
         {
             skillListBox.DataSource = null;
+            _selectedEnemy.UpdateSkillList(); // Ensure the enemy's skill list is up to date
             skillListBox.DataSource = _selectedEnemy.SkillList.ToList();
             skillListBox.DisplayMember = "Name";
             skillListBox.ValueMember = "SkillId";
         }
+
+
     }
 }

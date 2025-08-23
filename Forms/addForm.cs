@@ -161,7 +161,7 @@ namespace Thing
                     {
                         MessageBox.Show("Enemy not found in the database.");
                     }
-
+                    enemyPanel.Visible = false; // Hide the enemy details panel
                     // Remove the enemy from the battle's enemy list and refresh the list box
                     _selectedBattle.EnemyList.Remove(selectedEnemy);
                     RefreshEnemyList();
@@ -200,6 +200,8 @@ namespace Thing
                 knowledgeTextBox.Text = selectedEnemy.Knowledge;
                 intelligenceTextBox.Text = selectedEnemy.Intelligence;
                 enduranceTextBox.Text = selectedEnemy.Endurance;
+
+                enemyPanel.Visible = true; // Show the enemy details panel
 
             }
             else
@@ -491,12 +493,71 @@ namespace Thing
 
         private void saveEnemyButton_Click(object sender, EventArgs e)
         {
-
+            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            if (selectedEnemy != null)
+            {
+                selectedEnemy.Name = enemyNameTextBox.Text;
+                selectedEnemy.MaxHp = int.Parse(maxHpBox.Text);
+                selectedEnemy.CurrentHp = int.Parse(currentHpTextBox.Text);
+                selectedEnemy.MaxWounds = int.Parse(maxWoundsTextBox.Text);
+                selectedEnemy.CurrentWounds = int.Parse(currentWoundsTextBox.Text);
+                selectedEnemy.Strength = strengthTextBox.Text;
+                selectedEnemy.Willpower = willpowerTextBox.Text;
+                selectedEnemy.Agility = agilityTextBox.Text;
+                selectedEnemy.Charisma = charismaTextBox.Text;
+                selectedEnemy.Knowledge = knowledgeTextBox.Text;
+                selectedEnemy.Intelligence = intelligenceTextBox.Text;
+                selectedEnemy.Endurance = enduranceTextBox.Text;
+                try
+                {
+                    using (var context = new AppDbContext())
+                    {
+                        var enemyToUpdate = context.GetEnemyById(selectedEnemy.EnemyId);
+                        if (enemyToUpdate != null)
+                        {
+                            enemyToUpdate.Name = selectedEnemy.Name;
+                            enemyToUpdate.MaxHp = selectedEnemy.MaxHp;
+                            enemyToUpdate.CurrentHp = selectedEnemy.CurrentHp;
+                            enemyToUpdate.MaxWounds = selectedEnemy.MaxWounds;
+                            enemyToUpdate.CurrentWounds = selectedEnemy.CurrentWounds;
+                            enemyToUpdate.Strength = selectedEnemy.Strength;
+                            enemyToUpdate.Willpower = selectedEnemy.Willpower;
+                            enemyToUpdate.Agility = selectedEnemy.Agility;
+                            enemyToUpdate.Charisma = selectedEnemy.Charisma;
+                            enemyToUpdate.Knowledge = selectedEnemy.Knowledge;
+                            enemyToUpdate.Intelligence = selectedEnemy.Intelligence;
+                            enemyToUpdate.Endurance = selectedEnemy.Endurance;
+                            bool success = context.UpdateEnemy(enemyToUpdate);
+                            if (!success)
+                            {
+                                MessageBox.Show("Failed to update enemy in the database.");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Selected enemy not found in the database.");
+                        }
+                    }
+                    _selectedBattle.AddOrUpdateEnemy(selectedEnemy); // Update the battle's enemy list
+                    RefreshEnemyList(); // Refresh the enemy list box
+                    MessageBox.Show("Enemy details saved successfully.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+            else
+            {
+                MessageBox.Show("No enemy is currently selected.");
+            }
         }
 
         private void RefreshEnemyList()
         {
             enemyListBox.DataSource = null;
+            _selectedBattle.UpdateEnemyList(); // Ensure the battle's enemy list is up-to-date
             enemyListBox.DataSource = _selectedBattle.EnemyList.ToList();
             enemyListBox.DisplayMember = "DisplayName";
             enemyListBox.ValueMember = "EnemyId";

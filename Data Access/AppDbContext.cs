@@ -391,7 +391,64 @@ namespace Thing;
         return success;
     }
     #endregion
+
+    #region Get Lists By ID
+    public List<Enemy> GetEnemiesByBattleId(int battleId)
+    {
+        List<Enemy> enemies = new List<Enemy>();
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                enemies = context.Enemies
+                    .Where(e => e.BattleId == battleId)
+                    .Include(e => e.SkillList)
+                    .Include(e => e.WeaponList)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return enemies;
+    }
+    public List<Skill> GetSkillsByEnemyId(int enemyId)
+    {
+        List<Skill> skills = new List<Skill>();
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                skills = context.Skills
+                    .Where(s => s.EnemyId == enemyId)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return skills;
+    }
+    public List<Weapon> GetWeaponsByEnemyId(int enemyId)
+    {
+        List<Weapon> weapons = new List<Weapon>();
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                weapons = context.Weapons
+                    .Where(w => w.EnemyId == enemyId)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return weapons;
+    }
+    #endregion
 }
-
-
 

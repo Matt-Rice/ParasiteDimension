@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            skillPanel = new Panel();
+            weaponPanel = new Panel();
             saveButton = new Button();
             damageTextBox = new TextBox();
             label5 = new Label();
@@ -39,21 +39,23 @@
             weaponListBox = new ListBox();
             label2 = new Label();
             label1 = new Label();
-            skillPanel.SuspendLayout();
+            deleteButton = new Button();
+            closeButton = new Button();
+            weaponPanel.SuspendLayout();
             SuspendLayout();
             // 
-            // skillPanel
+            // weaponPanel
             // 
-            skillPanel.Controls.Add(saveButton);
-            skillPanel.Controls.Add(damageTextBox);
-            skillPanel.Controls.Add(label5);
-            skillPanel.Controls.Add(label4);
-            skillPanel.Controls.Add(weaponNameTextBox);
-            skillPanel.Location = new Point(259, 99);
-            skillPanel.Name = "skillPanel";
-            skillPanel.Size = new Size(324, 379);
-            skillPanel.TabIndex = 12;
-            skillPanel.Visible = false;
+            weaponPanel.Controls.Add(saveButton);
+            weaponPanel.Controls.Add(damageTextBox);
+            weaponPanel.Controls.Add(label5);
+            weaponPanel.Controls.Add(label4);
+            weaponPanel.Controls.Add(weaponNameTextBox);
+            weaponPanel.Location = new Point(259, 99);
+            weaponPanel.Name = "weaponPanel";
+            weaponPanel.Size = new Size(324, 379);
+            weaponPanel.TabIndex = 12;
+            weaponPanel.Visible = false;
             // 
             // saveButton
             // 
@@ -101,7 +103,7 @@
             // 
             // addButton
             // 
-            addButton.Location = new Point(127, 484);
+            addButton.Location = new Point(26, 484);
             addButton.Name = "addButton";
             addButton.Size = new Size(79, 34);
             addButton.TabIndex = 11;
@@ -146,12 +148,34 @@
             label1.Size = new Size(0, 25);
             label1.TabIndex = 7;
             // 
+            // deleteButton
+            // 
+            deleteButton.Location = new Point(129, 484);
+            deleteButton.Name = "deleteButton";
+            deleteButton.Size = new Size(77, 34);
+            deleteButton.TabIndex = 13;
+            deleteButton.Text = "Delete";
+            deleteButton.UseVisualStyleBackColor = true;
+            deleteButton.Click += deleteButton_Click;
+            // 
+            // closeButton
+            // 
+            closeButton.Location = new Point(641, 484);
+            closeButton.Name = "closeButton";
+            closeButton.Size = new Size(78, 34);
+            closeButton.TabIndex = 14;
+            closeButton.Text = "Close";
+            closeButton.UseVisualStyleBackColor = true;
+            closeButton.Click += closeButton_Click;
+            // 
             // WeaponsForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(745, 551);
-            Controls.Add(skillPanel);
+            Controls.Add(closeButton);
+            Controls.Add(deleteButton);
+            Controls.Add(weaponPanel);
             Controls.Add(addButton);
             Controls.Add(label3);
             Controls.Add(weaponListBox);
@@ -159,15 +183,15 @@
             Controls.Add(label1);
             Name = "WeaponsForm";
             Text = "WeaponsForm";
-            skillPanel.ResumeLayout(false);
-            skillPanel.PerformLayout();
+            weaponPanel.ResumeLayout(false);
+            weaponPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Panel skillPanel;
+        private Panel weaponPanel;
         private Button saveButton;
         private TextBox damageTextBox;
         private Label label5;
@@ -178,5 +202,7 @@
         private ListBox weaponListBox;
         private Label label2;
         private Label label1;
+        private Button deleteButton;
+        private Button closeButton;
     }
 }

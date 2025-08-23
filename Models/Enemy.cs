@@ -30,5 +30,23 @@ namespace Thing.Models
         public List<Weapon> WeaponList { get; set; } = new();
         public int BattleId { get; set; }
         public Battle Battle { get; set; }
+
+        public void UpdateSkillList()
+        {
+            using (var context = new AppDbContext())
+            {
+                SkillList = context.GetSkillsByEnemyId(EnemyId);
+                context.SaveChanges();
+            }
+        }
+
+        public void UpdateWeaponList()
+        {
+            using (var context = new AppDbContext())
+            {
+                WeaponList = context.GetWeaponsByEnemyId(EnemyId);
+                context.SaveChanges();
+            }
+        }
     }
 }
