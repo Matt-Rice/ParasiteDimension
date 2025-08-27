@@ -33,19 +33,47 @@ namespace Thing.Models
 
         public void UpdateSkillList()
         {
-            using (var context = new AppDbContext())
+            try 
+            { 
+                using (var context = new AppDbContext())
+                {
+                    var skillList = context.GetEnemyById(EnemyId).SkillList;
+                    if (skillList != null)
+                    {
+                        SkillList = skillList;
+                    }
+                    else
+                    {
+                        MessageBox.Show("No skills found for this enemy.");
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                SkillList = context.GetSkillsByEnemyId(EnemyId);
-                context.SaveChanges();
+                MessageBox.Show("Error updating skill list: " + ex.Message);
             }
         }
 
         public void UpdateWeaponList()
         {
-            using (var context = new AppDbContext())
+            try
             {
-                WeaponList = context.GetWeaponsByEnemyId(EnemyId);
-                context.SaveChanges();
+                using (var context = new AppDbContext())
+                {
+                    var weaponList = context.GetEnemyById(EnemyId).WeaponList;
+                    if (weaponList != null)
+                    {
+                        WeaponList = weaponList;
+                    }
+                    else
+                    {
+                        MessageBox.Show("No weapons found for this enemy.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error updating weapon list: " + ex.Message);
             }
         }
     }

@@ -36,6 +36,7 @@
             titleLabel = new Label();
             battleLabel = new Label();
             textBox1 = new TextBox();
+            refreshButton = new Button();
             SuspendLayout();
             // 
             // battleListBox
@@ -110,11 +111,22 @@
             textBox1.TabIndex = 18;
             textBox1.Text = resources.GetString("textBox1.Text");
             // 
+            // refreshButton
+            // 
+            refreshButton.Location = new Point(49, 370);
+            refreshButton.Name = "refreshButton";
+            refreshButton.Size = new Size(75, 23);
+            refreshButton.TabIndex = 19;
+            refreshButton.Text = "Refresh";
+            refreshButton.UseVisualStyleBackColor = true;
+            refreshButton.Click += refreshButton_Click;
+            // 
             // ParasiteDimension
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(refreshButton);
             Controls.Add(textBox1);
             Controls.Add(battleLabel);
             Controls.Add(titleLabel);
@@ -138,5 +150,6 @@
         private Label titleLabel;
         private Label battleLabel;
         private TextBox textBox1;
+        private Button refreshButton;
     }
 }

@@ -270,15 +270,15 @@
             // 
             // enduranceTextBox
             // 
-            enduranceTextBox.Location = new Point(191, 402);
+            enduranceTextBox.Location = new Point(156, 403);
             enduranceTextBox.Name = "enduranceTextBox";
-            enduranceTextBox.Size = new Size(38, 31);
+            enduranceTextBox.Size = new Size(109, 31);
             enduranceTextBox.TabIndex = 84;
             // 
             // enduranceLabel
             // 
             enduranceLabel.AutoSize = true;
-            enduranceLabel.Location = new Point(156, 368);
+            enduranceLabel.Location = new Point(162, 375);
             enduranceLabel.Name = "enduranceLabel";
             enduranceLabel.Size = new Size(94, 25);
             enduranceLabel.TabIndex = 83;
@@ -308,25 +308,27 @@
             // 
             // intelligenceTextBox
             // 
-            intelligenceTextBox.Location = new Point(289, 327);
+            intelligenceTextBox.Location = new Point(318, 327);
             intelligenceTextBox.Name = "intelligenceTextBox";
-            intelligenceTextBox.Size = new Size(38, 31);
+            intelligenceTextBox.Size = new Size(105, 31);
             intelligenceTextBox.TabIndex = 80;
+            intelligenceTextBox.TextChanged += intelligenceTextBox_TextChanged;
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(256, 293);
+            label7.Location = new Point(322, 293);
             label7.Name = "label7";
             label7.Size = new Size(101, 25);
             label7.TabIndex = 79;
             label7.Text = "Intelligence";
+            label7.Click += label7_Click;
             // 
             // knowledgeTextBox
             // 
-            knowledgeTextBox.Location = new Point(191, 327);
+            knowledgeTextBox.Location = new Point(156, 327);
             knowledgeTextBox.Name = "knowledgeTextBox";
-            knowledgeTextBox.Size = new Size(38, 31);
+            knowledgeTextBox.Size = new Size(109, 31);
             knowledgeTextBox.TabIndex = 78;
             // 
             // label8
@@ -340,15 +342,15 @@
             // 
             // charismaTextBox
             // 
-            charismaTextBox.Location = new Point(89, 327);
+            charismaTextBox.Location = new Point(11, 327);
             charismaTextBox.Name = "charismaTextBox";
-            charismaTextBox.Size = new Size(38, 31);
+            charismaTextBox.Size = new Size(106, 31);
             charismaTextBox.TabIndex = 76;
             // 
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new Point(67, 293);
+            label9.Location = new Point(21, 293);
             label9.Name = "label9";
             label9.Size = new Size(85, 25);
             label9.TabIndex = 75;
@@ -356,25 +358,26 @@
             // 
             // agilityTextBox
             // 
-            agilityTextBox.Location = new Point(289, 242);
+            agilityTextBox.Location = new Point(318, 242);
             agilityTextBox.Name = "agilityTextBox";
-            agilityTextBox.Size = new Size(38, 31);
+            agilityTextBox.Size = new Size(105, 31);
             agilityTextBox.TabIndex = 74;
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(289, 208);
+            label6.Location = new Point(343, 208);
             label6.Name = "label6";
             label6.Size = new Size(62, 25);
             label6.TabIndex = 73;
             label6.Text = "Agility";
+            label6.Click += label6_Click;
             // 
             // willpowerTextBox
             // 
-            willpowerTextBox.Location = new Point(191, 242);
+            willpowerTextBox.Location = new Point(156, 242);
             willpowerTextBox.Name = "willpowerTextBox";
-            willpowerTextBox.Size = new Size(38, 31);
+            willpowerTextBox.Size = new Size(116, 31);
             willpowerTextBox.TabIndex = 72;
             // 
             // label4
@@ -388,15 +391,16 @@
             // 
             // strengthTextBox
             // 
-            strengthTextBox.Location = new Point(89, 242);
+            strengthTextBox.Location = new Point(11, 242);
             strengthTextBox.Name = "strengthTextBox";
-            strengthTextBox.Size = new Size(38, 31);
+            strengthTextBox.Size = new Size(106, 31);
             strengthTextBox.TabIndex = 70;
+            strengthTextBox.TextChanged += strengthTextBox_TextChanged;
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(74, 208);
+            label5.Location = new Point(21, 208);
             label5.Name = "label5";
             label5.Size = new Size(79, 25);
             label5.TabIndex = 69;
@@ -544,7 +548,7 @@
             maxHpBox.Location = new Point(96, 62);
             maxHpBox.Name = "maxHpBox";
             maxHpBox.PlaceholderText = "HP";
-            maxHpBox.Size = new Size(38, 31);
+            maxHpBox.Size = new Size(54, 31);
             maxHpBox.TabIndex = 54;
             // 
             // label1

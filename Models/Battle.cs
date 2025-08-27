@@ -42,8 +42,15 @@ namespace Thing.Models
         {
             using (var context = new AppDbContext())
             {
-                EnemyList = context.GetEnemiesByBattleId(BattleId);
-                context.SaveChanges();
+                var enemyList = context.GetBattleById(BattleId).EnemyList;
+                if (enemyList != null)
+                {
+                    EnemyList = enemyList;
+                }
+                else
+                {
+                    MessageBox.Show("No enemies found for this battle.");
+                }
             }
         }
     }

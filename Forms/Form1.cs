@@ -67,7 +67,7 @@ namespace Thing
 
                 if (result == DialogResult.OK)
                 {
-                    MessageBox.Show("Okay");
+                    LoadBattles();
                 }
                 else if (result == DialogResult.Cancel)
                 {
@@ -112,6 +112,11 @@ namespace Thing
         private void titleLabel_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void refreshButton_Click(object sender, EventArgs e)
+        {
+            LoadBattles();
         }
     }
 }

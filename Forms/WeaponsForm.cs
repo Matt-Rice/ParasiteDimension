@@ -31,6 +31,11 @@ namespace Thing
         {
             try
             {
+                if (weaponListBox.DataSource == null)
+                {
+                    return; // No data source, nothing to do
+                }
+
                 var selectedWeapon = weaponListBox.SelectedItem as Weapon;
                 if (selectedWeapon != null)
                 {
@@ -54,8 +59,7 @@ namespace Thing
             Weapon newWeapon = new Weapon
             {
                 Name = "New Weapon",
-                EnemyId = _selectedEnemy.EnemyId,
-                Enemy = _selectedEnemy
+                EnemyId = _selectedEnemy.EnemyId
             };
             try
             {
@@ -143,20 +147,6 @@ namespace Thing
             try
             {
                 _selectedEnemy.UpdateWeaponList(); // Ensure the enemy's weapon list is up to date before closing
-                using (var context = new AppDbContext())
-                {
-                    var enemy = context.GetEnemyById(_selectedEnemy.EnemyId);
-                    if (enemy != null)
-                    {
-                        enemy.WeaponList = _selectedEnemy.WeaponList.ToList(); // Update the enemy's weapons in the database
-                        bool success = context.UpdateEnemy(enemy);
-                        if (!success)
-                        {
-                            MessageBox.Show("Failed to update enemy weapons. Please try again.");
-                            return;
-                        }
-                    }
-                }
                 this.Close(); // Close the form
             }
             catch (Exception ex)

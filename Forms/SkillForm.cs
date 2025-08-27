@@ -33,6 +33,11 @@ namespace Thing
         {
             try
             {
+                if (skillListBox.DataSource == null)
+                {
+                    return; // No data source, nothing to do
+                }
+
                 var selectedSkill = skillListBox.SelectedItem as Skill;
                 if (selectedSkill != null)
                 {
@@ -87,8 +92,7 @@ namespace Thing
             Skill newSkill = new Skill
             {
                 Name = "New Skill",
-                EnemyId = _selectedEnemy.EnemyId,
-                Enemy = _selectedEnemy
+                EnemyId = _selectedEnemy.EnemyId
             };
 
             try
@@ -116,20 +120,6 @@ namespace Thing
             try
             {
                 _selectedEnemy.UpdateSkillList(); // Ensure the enemy's skill list is up to date before closing
-                using (var context = new AppDbContext())
-                {
-                    var enemy = context.GetEnemyById(_selectedEnemy.EnemyId);
-                    if (enemy != null)
-                    {
-                        enemy.SkillList = _selectedEnemy.SkillList.ToList(); // Update the enemy's skills in the database
-                        bool success = context.UpdateEnemy(enemy);
-                        if (!success)
-                        {
-                            MessageBox.Show("Failed to update enemy skills. Please try again.");
-                            return;
-                        }
-                    }
-                }
                 this.Close(); // Close the form
             }
             catch (Exception ex)
@@ -155,7 +145,6 @@ namespace Thing
                         }
                     }
                     skillPanel.Visible = false; // Hide the skill details panel
-                    _selectedEnemy.SkillList.Remove(selectedSkill); // Update the enemy's skill list in memory
                     RefreshSkillList(); // Refresh the skill list in the UI
                 }
                 catch (Exception ex)

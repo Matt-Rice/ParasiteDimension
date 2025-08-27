@@ -25,13 +25,13 @@ namespace Thing;
         modelBuilder.Entity<Skill>()
             .HasOne(s => s.Enemy)
             .WithMany(e => e.SkillList)
-            .HasForeignKey(s => s.SkillId)
+            .HasForeignKey(s => s.EnemyId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Weapon>()
             .HasOne(w => w.Enemy)
             .WithMany(e => e.WeaponList)
-            .HasForeignKey(w => w.WeaponId)
+            .HasForeignKey(w => w.EnemyId)
             .OnDelete(DeleteBehavior.Cascade);
 
     }

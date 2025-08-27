@@ -73,9 +73,10 @@ namespace Thing
                     {
                         battle.Name = _selectedBattle.Name;
                         battle.Description = _selectedBattle.Description;
-                        battle.EnemyList = _selectedBattle.EnemyList;
                     }
                     context.SaveChanges();
+                    MessageBox.Show("Battle details saved successfully.");
+                    this.Close();
                 }
             }
             catch (Exception ex)
@@ -100,8 +101,7 @@ namespace Thing
             Enemy newEnemy = new Enemy
             {
                 Name = "New Enemy",
-                BattleId = _selectedBattle.BattleId,
-                Battle = _selectedBattle
+                BattleId = _selectedBattle.BattleId
             };
 
             var success = false;
@@ -185,6 +185,11 @@ namespace Thing
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (enemyListBox.DataSource == null)
+            {
+                return; // No data source, nothing to do
+            }
+
             var selectedEnemy = enemyListBox.SelectedItem as Enemy;
             if (selectedEnemy != null)
             {
@@ -561,6 +566,26 @@ namespace Thing
             enemyListBox.DataSource = _selectedBattle.EnemyList.ToList();
             enemyListBox.DisplayMember = "DisplayName";
             enemyListBox.ValueMember = "EnemyId";
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void strengthTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void intelligenceTextBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
