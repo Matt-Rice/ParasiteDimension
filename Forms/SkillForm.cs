@@ -17,6 +17,16 @@ namespace Thing
         public SkillForm(Enemy selectedEnemy)
         {
             _selectedEnemy = selectedEnemy;
+            using (var context = new AppDbContext())
+            {
+                _selectedEnemy = context.GetEnemyById(_selectedEnemy.EnemyId);
+                if (_selectedEnemy == null)
+                {
+                    MessageBox.Show("Selected enemy not found in the database.");
+                    this.Close(); // Close the form if the enemy is not found
+                    return;
+                }
+            }
             InitializeComponent();
         }
 
@@ -38,7 +48,7 @@ namespace Thing
                     return; // No data source, nothing to do
                 }
 
-                var selectedSkill = skillListBox.SelectedItem as Skill;
+                var selectedSkill = GetSkillFromListBox();
                 if (selectedSkill != null)
                 {
                     skillNameTextBox.Text = selectedSkill.Name;
@@ -60,7 +70,7 @@ namespace Thing
         {
             try
             {
-                var selectedSkill = skillListBox.SelectedItem as Skill;
+                var selectedSkill = GetSkillFromListBox();
                 if (selectedSkill != null)
                 {
                     selectedSkill.Name = skillNameTextBox.Text;
@@ -130,7 +140,7 @@ namespace Thing
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            var selectedSkill = skillListBox.SelectedItem as Skill;
+            var selectedSkill = GetSkillFromListBox();
             if (selectedSkill != null)
             {
                 try
@@ -167,6 +177,36 @@ namespace Thing
             skillListBox.ValueMember = "SkillId";
         }
 
+        private Skill? GetSkillFromListBox()
+        {
+            try
+            {
+                var skill = skillListBox.SelectedItem as Skill;
+                if (skill == null)
+                {
+                    MessageBox.Show("Please select an skill before you continue");
+                    return null;
+                }
+                using (var context = new AppDbContext())
+                {
+                    var dbSkill = context.GetSkillById(skill.SkillId);
+                    if (dbSkill != null)
+                    {
+                        return dbSkill;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Skill not found in the database.");
+                        return skill; // Return the original enemy if not found
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return null; // Return the original enemy in case of error
+            }
+        }
 
     }
 }

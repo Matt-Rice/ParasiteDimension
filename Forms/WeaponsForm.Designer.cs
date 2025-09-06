@@ -183,6 +183,7 @@
             Controls.Add(label1);
             Name = "WeaponsForm";
             Text = "WeaponsForm";
+            Load += WeaponsForm_Load;
             weaponPanel.ResumeLayout(false);
             weaponPanel.PerformLayout();
             ResumeLayout(false);

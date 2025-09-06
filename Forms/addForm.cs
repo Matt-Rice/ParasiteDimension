@@ -17,7 +17,23 @@ namespace Thing
 
         public addForm(Battle battle)
         {
-            _selectedBattle = battle;
+            try
+            {
+                using (var context = new AppDbContext())
+                {
+                    _selectedBattle = context.GetBattleById(battle.BattleId);
+
+                    if (_selectedBattle == null)
+                    {
+                        MessageBox.Show("The selected battle is invalid");
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex) 
+            {
+                MessageBox.Show(ex.Message);
+            }
             InitializeComponent();
         }
 
@@ -73,10 +89,17 @@ namespace Thing
                     {
                         battle.Name = _selectedBattle.Name;
                         battle.Description = _selectedBattle.Description;
+                        bool success = context.UpdateBattle(battle);
+                        if (success)
+                        {
+                            MessageBox.Show("Battle details saved successfully.");
+                            this.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to update battle in the database.");
+                        }
                     }
-                    context.SaveChanges();
-                    MessageBox.Show("Battle details saved successfully.");
-                    this.Close();
                 }
             }
             catch (Exception ex)
@@ -135,15 +158,15 @@ namespace Thing
         /// <param name="e"></param>
         private void deleteEnemyButton_Click(object sender, EventArgs e)
         {
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
-            if (selectedEnemy == null)
-            {
-                MessageBox.Show("Please select an enemy to delete.");
-                return;
-            }
 
             try
             {
+                var selectedEnemy = GetEnemyFromListBox();
+                if (selectedEnemy == null)
+                {
+                    MessageBox.Show("Please select an enemy before you continue");
+                    return;
+                }
                 bool success = false;
                 using (var context = new AppDbContext())
                 {
@@ -190,29 +213,37 @@ namespace Thing
                 return; // No data source, nothing to do
             }
 
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
-            if (selectedEnemy != null)
+            try
             {
-                enemyNameTextBox.Text = selectedEnemy.Name;
-                maxHpBox.Text = selectedEnemy.MaxHp.ToString();
-                currentHpTextBox.Text = selectedEnemy.CurrentHp.ToString();
-                maxWoundsTextBox.Text = selectedEnemy.MaxWounds.ToString();
-                currentWoundsTextBox.Text = selectedEnemy.CurrentWounds.ToString();
-                strengthTextBox.Text = selectedEnemy.Strength;
-                willpowerTextBox.Text = selectedEnemy.Willpower;
-                agilityTextBox.Text = selectedEnemy.Agility;
-                charismaTextBox.Text = selectedEnemy.Charisma;
-                knowledgeTextBox.Text = selectedEnemy.Knowledge;
-                intelligenceTextBox.Text = selectedEnemy.Intelligence;
-                enduranceTextBox.Text = selectedEnemy.Endurance;
+               var selectedEnemy = GetEnemyFromListBox();
 
-                enemyPanel.Visible = true; // Show the enemy details panel
+                if (selectedEnemy != null)
+                {
+                    enemyNameTextBox.Text = selectedEnemy.Name;
+                    maxHpBox.Text = selectedEnemy.MaxHp.ToString();
+                    currentHpTextBox.Text = selectedEnemy.CurrentHp.ToString();
+                    maxWoundsTextBox.Text = selectedEnemy.MaxWounds.ToString();
+                    currentWoundsTextBox.Text = selectedEnemy.CurrentWounds.ToString();
+                    strengthTextBox.Text = selectedEnemy.Strength;
+                    willpowerTextBox.Text = selectedEnemy.Willpower;
+                    agilityTextBox.Text = selectedEnemy.Agility;
+                    charismaTextBox.Text = selectedEnemy.Charisma;
+                    knowledgeTextBox.Text = selectedEnemy.Knowledge;
+                    intelligenceTextBox.Text = selectedEnemy.Intelligence;
+                    enduranceTextBox.Text = selectedEnemy.Endurance;
 
+                    enemyPanel.Visible = true; // Show the enemy details panel
+
+                }
+                else
+                {
+                    MessageBox.Show("Selected enemy is invalid.");
+
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Selected enemy is invalid.");
-
+                MessageBox.Show(ex.ToString());
             }
         }
 
@@ -233,7 +264,9 @@ namespace Thing
         /// <param name="e"></param>
         private void plusHpButton_Click(object sender, EventArgs e)
         {
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            try
+            {
+            var selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy == null)
             {
                 MessageBox.Show("Please select an enemy before you continue");
@@ -254,8 +287,7 @@ namespace Thing
                 MessageBox.Show("Invalid damage amount. Please enter a valid number.");
                 return;
             }
-            try
-            {
+
                 using (var context = new AppDbContext())
                 {
                     var enemy = context.GetEnemyById(selectedEnemy.EnemyId);
@@ -292,7 +324,9 @@ namespace Thing
         /// <param name="e"></param>
         private void minusHpButton_Click(object sender, EventArgs e)
         {
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            try
+            { 
+            var selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy == null)
             {
                 MessageBox.Show("Please select an enemy before you continue");
@@ -305,13 +339,20 @@ namespace Thing
                 selectedEnemy.CurrentHp -= damage;
                 if (selectedEnemy.CurrentHp <= 0)
                 {
-                    selectedEnemy.CurrentHp += selectedEnemy.MaxHp; // Damage bleeds into next wound
-                    selectedEnemy.CurrentWounds += 1; // Increase wound count
-                    if (selectedEnemy.CurrentWounds >= selectedEnemy.MaxWounds)
-                    {
-                        selectedEnemy.CurrentWounds = selectedEnemy.MaxWounds; // Cap at MaxWounds
-                        MessageBox.Show("Enemy has reached maximum wounds and is dead.");
-                    }
+                    bool negative = true;
+                        while (negative)
+                        {
+                            selectedEnemy.CurrentHp += selectedEnemy.MaxHp; // Damage bleeds into next wound
+                            selectedEnemy.CurrentWounds += 1; // Increase wound count
+                            if (selectedEnemy.CurrentWounds >= selectedEnemy.MaxWounds)
+                            {
+                                selectedEnemy.CurrentWounds = selectedEnemy.MaxWounds; // Cap at MaxWounds
+                                selectedEnemy.CurrentHp = selectedEnemy.MaxHp;
+                                MessageBox.Show("Enemy has reached maximum wounds and is dead.");
+                                negative = false; // Exit loop if enemy is dead
+                            }
+                            if (selectedEnemy.CurrentHp > 0) negative = false;
+                        }
                 }
             }
             else
@@ -319,8 +360,6 @@ namespace Thing
                 MessageBox.Show("Invalid damage amount. Please enter a valid number.");
                 return;
             }
-            try
-            {
                 using (var context = new AppDbContext())
                 {
                     var enemy = context.GetEnemyById(selectedEnemy.EnemyId);
@@ -368,7 +407,9 @@ namespace Thing
         /// <param name="e"></param>
         private void minusWoundButton_Click(object sender, EventArgs e)
         {
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            try
+            {
+            var selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy == null)
             {
                 MessageBox.Show("Please select an enemy before you continue");
@@ -382,8 +423,6 @@ namespace Thing
                 MessageBox.Show("Enemy has no wounds.");
             }
 
-            try
-            {
                 using (var context = new AppDbContext())
                 {
                     var enemy = context.GetEnemyById(selectedEnemy.EnemyId);
@@ -419,7 +458,7 @@ namespace Thing
         /// <param name="e"></param>
         private void plusWoundButton_Click(object sender, EventArgs e)
         {
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            var selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy == null)
             {
                 MessageBox.Show("Please select an enemy before you continue");
@@ -470,7 +509,7 @@ namespace Thing
 
         private void skillsButton_Click(object sender, EventArgs e)
         {
-            Enemy? selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            Enemy? selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy == null)
             {
                 MessageBox.Show("Please select an enemy before you continue");
@@ -484,7 +523,7 @@ namespace Thing
         }
         private void weaponsButton_Click(object sender, EventArgs e)
         {
-            Enemy? selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            Enemy? selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy == null)
             {
                 MessageBox.Show("Please select an enemy before you continue");
@@ -498,7 +537,7 @@ namespace Thing
 
         private void saveEnemyButton_Click(object sender, EventArgs e)
         {
-            var selectedEnemy = enemyListBox.SelectedItem as Enemy;
+            var selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy != null)
             {
                 selectedEnemy.Name = enemyNameTextBox.Text;
@@ -568,6 +607,36 @@ namespace Thing
             enemyListBox.ValueMember = "EnemyId";
         }
 
+        private Enemy? GetEnemyFromListBox()
+        {
+            try
+            {
+                var enemy = enemyListBox.SelectedItem as Enemy;
+                if (enemy == null)
+                {
+                    MessageBox.Show("Please select an enemy before you continue");
+                    return null;
+                }
+                using (var context = new AppDbContext())
+                {
+                    var dbEnemy = context.GetEnemyById(enemy.EnemyId);
+                    if (dbEnemy != null)
+                    {
+                        return dbEnemy;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Enemy not found in the database.");
+                        return enemy; // Return the original enemy if not found
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return null; // Return the original enemy in case of error
+            }
+        }
         private void label6_Click(object sender, EventArgs e)
         {
 

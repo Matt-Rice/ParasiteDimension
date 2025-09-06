@@ -17,6 +17,16 @@ namespace Thing
         public WeaponsForm(Enemy selectedEnemy)
         {
             _selectedEnemy = selectedEnemy;
+            using (var context = new AppDbContext())
+            {
+                _selectedEnemy = context.GetEnemyById(_selectedEnemy.EnemyId);
+                if (_selectedEnemy == null)
+                {
+                    MessageBox.Show("Selected enemy not found in the database.");
+                    this.Close(); // Close the form if the enemy is not found
+                    return;
+                }
+            }
             InitializeComponent();
         }
         private void WeaponsForm_Load(object sender, EventArgs e)
@@ -36,7 +46,7 @@ namespace Thing
                     return; // No data source, nothing to do
                 }
 
-                var selectedWeapon = weaponListBox.SelectedItem as Weapon;
+                var selectedWeapon = GetWeaponFromListBox();
                 if (selectedWeapon != null)
                 {
                     weaponNameTextBox.Text = selectedWeapon.Name;
@@ -85,7 +95,7 @@ namespace Thing
         {
             try
             {
-                var selectedWeapon = weaponListBox.SelectedItem as Weapon;
+                var selectedWeapon = GetWeaponFromListBox();
                 if (selectedWeapon != null)
                 {
                     selectedWeapon.Name = weaponNameTextBox.Text;
@@ -113,7 +123,7 @@ namespace Thing
         }
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            var selectedWeapon = weaponListBox.SelectedItem as Weapon;
+            var selectedWeapon = GetWeaponFromListBox();
             if (selectedWeapon != null)
             {
                 try
@@ -162,6 +172,37 @@ namespace Thing
             weaponListBox.DataSource = _selectedEnemy.WeaponList.ToList();
             weaponListBox.DisplayMember = "Name";
             weaponListBox.ValueMember = "WeaponId";
+        }
+
+        private Weapon? GetWeaponFromListBox()
+        {
+            try
+            {
+                var weapon = weaponListBox.SelectedItem as Weapon;
+                if (weapon == null)
+                {
+                    MessageBox.Show("Please select an weapon before you continue");
+                    return null;
+                }
+                using (var context = new AppDbContext())
+                {
+                    var dbWeapon = context.GetWeaponById(weapon.WeaponId);
+                    if (dbWeapon != null)
+                    {
+                        return dbWeapon;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Weapon not found in the database.");
+                        return weapon; // Return the original enemy if not found
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return null; // Return the original enemy in case of error
+            }
         }
     }
 }

@@ -65,14 +65,8 @@ namespace Thing
             {
                 var result = modal.ShowDialog();
 
-                if (result == DialogResult.OK)
-                {
                     LoadBattles();
-                }
-                else if (result == DialogResult.Cancel)
-                {
-                    MessageBox.Show("Cancelled");
-                }
+
             }
         }
 
