@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Thing.Models;
+using Thing.Forms;
 
 namespace Thing
 {
@@ -30,7 +31,7 @@ namespace Thing
                     }
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -47,20 +48,25 @@ namespace Thing
                 descriptionBox.Text = _selectedBattle.Description;
 
                 var enemies = _selectedBattle.EnemyList.ToList();
+                var players = _selectedBattle.PlayerList.ToList();
 
                 enemyListBox.DataSource = enemies;
                 enemyListBox.DisplayMember = "DisplayName";
                 enemyListBox.ValueMember = "EnemyId";
+
+                playerListBox.DataSource = players;
+                playerListBox.DisplayMember = "Name";
+                playerListBox.ValueMember = "PlayerId";
             }
             catch (NullReferenceException ex)
             {
                 MessageBox.Show("Battle not found");
-                ActiveForm.Close();
+                this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
-                ActiveForm.Close();
+                this.Close();
             }
         }
 
@@ -215,7 +221,7 @@ namespace Thing
 
             try
             {
-               var selectedEnemy = GetEnemyFromListBox();
+                var selectedEnemy = GetEnemyFromListBox();
 
                 if (selectedEnemy != null)
                 {
@@ -231,6 +237,9 @@ namespace Thing
                     knowledgeTextBox.Text = selectedEnemy.Knowledge;
                     intelligenceTextBox.Text = selectedEnemy.Intelligence;
                     enduranceTextBox.Text = selectedEnemy.Endurance;
+                    armorTextBox.Text = selectedEnemy.Armor;
+                    movementTextBox.Text = selectedEnemy.Movement;
+                    enemyInitiativeTextBox.Text = selectedEnemy.Initiative.ToString();
 
                     enemyPanel.Visible = true; // Show the enemy details panel
 
@@ -254,7 +263,7 @@ namespace Thing
         /// <param name="e"></param>
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            ActiveForm.Close();
+            Close();
         }
 
         /// <summary>
@@ -266,27 +275,27 @@ namespace Thing
         {
             try
             {
-            var selectedEnemy = GetEnemyFromListBox();
-            if (selectedEnemy == null)
-            {
-                MessageBox.Show("Please select an enemy before you continue");
-                return;
-            }
-
-            int damage; //specific amount of damage to be healed
-            if (int.TryParse(damageTextBox.Text, out damage))
-            {
-                selectedEnemy.CurrentHp += damage;
-                if (selectedEnemy.CurrentHp > selectedEnemy.MaxHp)
+                var selectedEnemy = GetEnemyFromListBox();
+                if (selectedEnemy == null)
                 {
-                    selectedEnemy.CurrentHp = selectedEnemy.MaxHp; // Cap at MaxHp
+                    MessageBox.Show("Please select an enemy before you continue");
+                    return;
                 }
-            }
-            else
-            {
-                MessageBox.Show("Invalid damage amount. Please enter a valid number.");
-                return;
-            }
+
+                int damage; //specific amount of damage to be healed
+                if (int.TryParse(damageTextBox.Text, out damage))
+                {
+                    selectedEnemy.CurrentHp += damage;
+                    if (selectedEnemy.CurrentHp > selectedEnemy.MaxHp)
+                    {
+                        selectedEnemy.CurrentHp = selectedEnemy.MaxHp; // Cap at MaxHp
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid damage amount. Please enter a valid number.");
+                    return;
+                }
 
                 using (var context = new AppDbContext())
                 {
@@ -325,21 +334,21 @@ namespace Thing
         private void minusHpButton_Click(object sender, EventArgs e)
         {
             try
-            { 
-            var selectedEnemy = GetEnemyFromListBox();
-            if (selectedEnemy == null)
             {
-                MessageBox.Show("Please select an enemy before you continue");
-                return;
-            }
-
-            int damage; //specific amount of damage to be healed
-            if (int.TryParse(damageTextBox.Text, out damage))
-            {
-                selectedEnemy.CurrentHp -= damage;
-                if (selectedEnemy.CurrentHp <= 0)
+                var selectedEnemy = GetEnemyFromListBox();
+                if (selectedEnemy == null)
                 {
-                    bool negative = true;
+                    MessageBox.Show("Please select an enemy before you continue");
+                    return;
+                }
+
+                int damage; //specific amount of damage to be healed
+                if (int.TryParse(damageTextBox.Text, out damage))
+                {
+                    selectedEnemy.CurrentHp -= damage;
+                    if (selectedEnemy.CurrentHp <= 0)
+                    {
+                        bool negative = true;
                         while (negative)
                         {
                             selectedEnemy.CurrentHp += selectedEnemy.MaxHp; // Damage bleeds into next wound
@@ -353,13 +362,13 @@ namespace Thing
                             }
                             if (selectedEnemy.CurrentHp > 0) negative = false;
                         }
+                    }
                 }
-            }
-            else
-            {
-                MessageBox.Show("Invalid damage amount. Please enter a valid number.");
-                return;
-            }
+                else
+                {
+                    MessageBox.Show("Invalid damage amount. Please enter a valid number.");
+                    return;
+                }
                 using (var context = new AppDbContext())
                 {
                     var enemy = context.GetEnemyById(selectedEnemy.EnemyId);
@@ -409,19 +418,19 @@ namespace Thing
         {
             try
             {
-            var selectedEnemy = GetEnemyFromListBox();
-            if (selectedEnemy == null)
-            {
-                MessageBox.Show("Please select an enemy before you continue");
-                return;
-            }
+                var selectedEnemy = GetEnemyFromListBox();
+                if (selectedEnemy == null)
+                {
+                    MessageBox.Show("Please select an enemy before you continue");
+                    return;
+                }
 
-            selectedEnemy.CurrentWounds -= 1;
-            if (selectedEnemy.CurrentWounds <= 0)
-            {
-                selectedEnemy.CurrentWounds = 0; // Cap at 0 wounds
-                MessageBox.Show("Enemy has no wounds.");
-            }
+                selectedEnemy.CurrentWounds -= 1;
+                if (selectedEnemy.CurrentWounds <= 0)
+                {
+                    selectedEnemy.CurrentWounds = 0; // Cap at 0 wounds
+                    MessageBox.Show("Enemy has no wounds.");
+                }
 
                 using (var context = new AppDbContext())
                 {
@@ -540,11 +549,45 @@ namespace Thing
             var selectedEnemy = GetEnemyFromListBox();
             if (selectedEnemy != null)
             {
+                int maxHp, currentHp, maxWounds, currentWounds, initiative;
+
+                if (!int.TryParse(maxHpBox.Text, out maxHp))
+                {
+                    MessageBox.Show("Invalid value for Max HP. Please enter a number.");
+                    return;
+                }
+
+                if (!int.TryParse(currentHpTextBox.Text, out currentHp))
+                {
+                    MessageBox.Show("Invalid value for Current HP. Please enter a number.");
+                    return;
+                }
+
+                if (!int.TryParse(maxWoundsTextBox.Text, out maxWounds))
+                {
+                    MessageBox.Show("Invalid value for Max Wounds. Please enter a number.");
+                    return;
+                }
+
+                if (!int.TryParse(currentWoundsTextBox.Text, out currentWounds))
+                {
+                    MessageBox.Show("Invalid value for Current Wounds. Please enter a number.");
+                    return;
+                }
+
+                if (!int.TryParse(enemyInitiativeTextBox.Text, out initiative))
+                {
+                    MessageBox.Show("Invalid value for Initiative. Please enter a number.");
+                    return;
+                }
+
+                // Only set values if all parsing succeeded
+                selectedEnemy.MaxHp = maxHp;
+                selectedEnemy.CurrentHp = currentHp;
+                selectedEnemy.MaxWounds = maxWounds;
+                selectedEnemy.CurrentWounds = currentWounds;
+                selectedEnemy.Initiative = initiative;
                 selectedEnemy.Name = enemyNameTextBox.Text;
-                selectedEnemy.MaxHp = int.Parse(maxHpBox.Text);
-                selectedEnemy.CurrentHp = int.Parse(currentHpTextBox.Text);
-                selectedEnemy.MaxWounds = int.Parse(maxWoundsTextBox.Text);
-                selectedEnemy.CurrentWounds = int.Parse(currentWoundsTextBox.Text);
                 selectedEnemy.Strength = strengthTextBox.Text;
                 selectedEnemy.Willpower = willpowerTextBox.Text;
                 selectedEnemy.Agility = agilityTextBox.Text;
@@ -552,6 +595,9 @@ namespace Thing
                 selectedEnemy.Knowledge = knowledgeTextBox.Text;
                 selectedEnemy.Intelligence = intelligenceTextBox.Text;
                 selectedEnemy.Endurance = enduranceTextBox.Text;
+                selectedEnemy.Armor = armorTextBox.Text;
+                selectedEnemy.Movement = movementTextBox.Text;
+
                 try
                 {
                     using (var context = new AppDbContext())
@@ -571,6 +617,9 @@ namespace Thing
                             enemyToUpdate.Knowledge = selectedEnemy.Knowledge;
                             enemyToUpdate.Intelligence = selectedEnemy.Intelligence;
                             enemyToUpdate.Endurance = selectedEnemy.Endurance;
+                            enemyToUpdate.Armor = selectedEnemy.Armor;
+                            enemyToUpdate.Movement = selectedEnemy.Movement;
+                            enemyToUpdate.Initiative = selectedEnemy.Initiative;
                             bool success = context.UpdateEnemy(enemyToUpdate);
                             if (!success)
                             {
@@ -600,11 +649,32 @@ namespace Thing
 
         private void RefreshEnemyList()
         {
+            // Save the currently selected EnemyId (if any)
+            int? selectedEnemyId = null;
+            if (enemyListBox.SelectedItem is Enemy selectedEnemy)
+            {
+                selectedEnemyId = selectedEnemy.EnemyId;
+            }
+
             enemyListBox.DataSource = null;
             _selectedBattle.UpdateEnemyList(); // Ensure the battle's enemy list is up-to-date
-            enemyListBox.DataSource = _selectedBattle.EnemyList.ToList();
+            var enemies = _selectedBattle.EnemyList.ToList();
+            enemyListBox.DataSource = enemies;
             enemyListBox.DisplayMember = "DisplayName";
             enemyListBox.ValueMember = "EnemyId";
+
+            // Restore selection if possible
+            if (selectedEnemyId.HasValue)
+            {
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    if (enemies[i].EnemyId == selectedEnemyId.Value)
+                    {
+                        enemyListBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
         }
 
         private Enemy? GetEnemyFromListBox()
@@ -655,6 +725,241 @@ namespace Thing
         private void intelligenceTextBox_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void playerListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (playerListBox.DataSource == null)
+            {
+                return; // No data source, nothing to do
+            }
+
+            try
+            {
+                var selectedPlayer = GetPlayerFromListBox();
+
+                if (selectedPlayer != null)
+                {
+                    playerNameTextBox.Text = selectedPlayer.Name;
+                    playerInitiativeTextBox.Text = selectedPlayer.Initiative.ToString();
+                    deadCheckBox.Checked = selectedPlayer.IsDead;
+
+                    playerPanel.Visible = true; // Show the enemy details panel
+
+                }
+                else
+                {
+                    MessageBox.Show("Selected enemy is invalid.");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+        }
+
+        private void savePlayerButton_Click(object sender, EventArgs e)
+        {
+            var selectedPlayer = GetPlayerFromListBox();
+            if (selectedPlayer != null)
+            {
+                int initiative;
+
+                if (!int.TryParse(playerInitiativeTextBox.Text, out initiative))
+                {
+                    MessageBox.Show("Invalid value for Initiative. Please enter a number.");
+                    return;
+                }
+
+                selectedPlayer.Name = playerNameTextBox.Text;
+                selectedPlayer.Initiative = initiative;
+                selectedPlayer.IsDead = deadCheckBox.Checked;
+                try
+                {
+                    using (var context = new AppDbContext())
+                    {
+                        var playerToUpdate = context.GetPlayerById(selectedPlayer.PlayerId);
+                        if (playerToUpdate != null)
+                        {
+                            playerToUpdate.Name = selectedPlayer.Name;
+                            playerToUpdate.Initiative = selectedPlayer.Initiative;
+                            playerToUpdate.IsDead = selectedPlayer.IsDead;
+                            bool success = context.UpdatePlayer(playerToUpdate);
+                            if (!success)
+                            {
+                                MessageBox.Show("Failed to update player in the database.");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Selected player not found in the database.");
+                        }
+                    }
+                    RefreshPlayerList(); // Refresh the player list box
+                    MessageBox.Show("Player details saved successfully.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+            else
+            {
+                MessageBox.Show("No player is currently selected.");
+            }
+        }
+
+        private void deletePlayerButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var selectedPlayer = GetPlayerFromListBox();
+                if (selectedPlayer == null)
+                {
+                    MessageBox.Show("Please select a player before you continue");
+                    return;
+                }
+                bool success = false;
+                using (var context = new AppDbContext())
+                {
+                    var playerToDelete = context.GetPlayerById(selectedPlayer.PlayerId);
+                    if (playerToDelete != null)
+                    {
+                        success = context.DeletePlayerByID(playerToDelete.PlayerId);
+                        if (!success)
+                        {
+                            MessageBox.Show("Failed to delete player from the database.");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Player not found in the database.");
+                    }
+                    playerPanel.Visible = false; // Hide the player details panel
+                    // Remove the player from the battle's player list and refresh the list box
+                    _selectedBattle.PlayerList.Remove(selectedPlayer);
+                    RefreshPlayerList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void addPlayerButton_Click(object sender, EventArgs e)
+        {
+
+            // Create a new player associated with the selected battle
+            Player newPlayer = new Player
+            {
+                Name = "New Player",
+                BattleId = _selectedBattle.BattleId
+            };
+            var success = false;
+            try
+            {
+                using (var context = new AppDbContext())
+                {
+                    success = context.InsertPlayer(newPlayer);
+                    if (!success)
+                    {
+                        MessageBox.Show("Failed to add new player to the database.");
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return;
+            }
+            _selectedBattle.PlayerList.Add(newPlayer);
+            // Add the new player to the list box and refresh it
+            RefreshPlayerList();
+        }
+
+        private void RefreshPlayerList()
+        {
+            // Save the currently selected PlayerId (if any)
+            int? selectedPlayerId = null;
+            if (playerListBox.SelectedItem is Player selectedPlayer)
+            {
+                selectedPlayerId = selectedPlayer.PlayerId;
+            }
+            playerListBox.DataSource = null;
+            _selectedBattle.UpdatePlayerList(); // Ensure the battle's player list is up-to-date
+            var players = _selectedBattle.PlayerList.ToList();
+            playerListBox.DataSource = players;
+            playerListBox.DisplayMember = "Name";
+            playerListBox.ValueMember = "PlayerId";
+            // Restore selection if possible
+            if (selectedPlayerId.HasValue)
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if (players[i].PlayerId == selectedPlayerId.Value)
+                    {
+                        playerListBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+        private Player? GetPlayerFromListBox()
+        {
+            try
+            {
+                var player = playerListBox.SelectedItem as Player;
+                if (player == null)
+                {
+                    MessageBox.Show("Please select an player before you continue");
+                    return null;
+                }
+                using (var context = new AppDbContext())
+                {
+                    var dbPlayer = context.GetPlayerById(player.PlayerId);
+                    if (dbPlayer != null)
+                    {
+                        return dbPlayer;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Player not found in the database.");
+                        return player; // Return the original player if not found
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return null; // Return the original player in case of error
+            }
+        }
+
+        private void turnOrderButton_Click(object sender, EventArgs e)
+        {
+            List<Player> players = new List<Player>();
+            List<Enemy> enemies = new List<Enemy>();
+
+            using (var context = new AppDbContext())
+            {
+                players = context.GetPlayersByBattleId(_selectedBattle.BattleId).ToList().Where(p => !p.IsDead).ToList();
+                enemies = context.GetEnemiesByBattleId(_selectedBattle.BattleId).ToList().Where(e => !e.IsDead).ToList();
+            }
+            using (var modal = new InitiativeForm(players, enemies))
+            {
+                modal.ShowDialog(this);
+            }
         }
     }
 }

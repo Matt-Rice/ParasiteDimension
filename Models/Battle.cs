@@ -17,6 +17,7 @@ namespace Thing.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<Enemy> EnemyList = new();
+        public List<Player> PlayerList = new();
 
         public void AddOrUpdateEnemy(Enemy enemy)
             {
@@ -50,6 +51,22 @@ namespace Thing.Models
                 else
                 {
                     MessageBox.Show("No enemies found for this battle.");
+                }
+            }
+        }
+
+        public void UpdatePlayerList()
+        {
+            using (var context = new AppDbContext())
+            {
+                var playerList = context.GetBattleById(BattleId).PlayerList;
+                if (playerList != null)
+                {
+                    PlayerList = playerList;
+                }
+                else
+                {
+                    MessageBox.Show("No players found for this battle.");
                 }
             }
         }

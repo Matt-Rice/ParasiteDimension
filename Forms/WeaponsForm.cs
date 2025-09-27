@@ -51,6 +51,7 @@ namespace Thing
                 {
                     weaponNameTextBox.Text = selectedWeapon.Name;
                     damageTextBox.Text = selectedWeapon.Damage;
+                    apTextBox.Text = selectedWeapon.AP;
                     weaponPanel.Visible = true; // Show the weapon details panel
                 }
                 else
@@ -70,6 +71,7 @@ namespace Thing
             {
                 Name = "New Weapon",
                 EnemyId = _selectedEnemy.EnemyId
+
             };
             try
             {
@@ -100,6 +102,7 @@ namespace Thing
                 {
                     selectedWeapon.Name = weaponNameTextBox.Text;
                     selectedWeapon.Damage = damageTextBox.Text;
+                    selectedWeapon.AP = apTextBox.Text;
                     using (var context = new AppDbContext())
                     {
                         bool success = context.UpdateWeapon(selectedWeapon);
@@ -167,11 +170,32 @@ namespace Thing
 
         private void RefreshWeaponList()
         {
+            // Save the currently selected WeaponId (if any)
+            int? selectedWeaponId = null;
+            if (weaponListBox.SelectedItem is Weapon selectedWeapon)
+            {
+                selectedWeaponId = selectedWeapon.WeaponId;
+            }
+
             weaponListBox.DataSource = null;
             _selectedEnemy.UpdateWeaponList(); // Ensure the enemy's weapon list is up to date
-            weaponListBox.DataSource = _selectedEnemy.WeaponList.ToList();
+            var weapons = _selectedEnemy.WeaponList.ToList();
+            weaponListBox.DataSource = weapons;
             weaponListBox.DisplayMember = "Name";
             weaponListBox.ValueMember = "WeaponId";
+
+            // Restore selection if possible
+            if (selectedWeaponId.HasValue)
+            {
+                for (int i = 0; i < weapons.Count; i++)
+                {
+                    if (weapons[i].WeaponId == selectedWeaponId.Value)
+                    {
+                        weaponListBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
         }
 
         private Weapon? GetWeaponFromListBox()
@@ -203,6 +227,11 @@ namespace Thing
                 MessageBox.Show(ex.ToString());
                 return null; // Return the original enemy in case of error
             }
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

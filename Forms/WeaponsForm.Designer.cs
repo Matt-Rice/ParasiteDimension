@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             weaponPanel = new Panel();
+            label6 = new Label();
+            apTextBox = new TextBox();
             saveButton = new Button();
             damageTextBox = new TextBox();
             label5 = new Label();
@@ -46,6 +48,8 @@
             // 
             // weaponPanel
             // 
+            weaponPanel.Controls.Add(label6);
+            weaponPanel.Controls.Add(apTextBox);
             weaponPanel.Controls.Add(saveButton);
             weaponPanel.Controls.Add(damageTextBox);
             weaponPanel.Controls.Add(label5);
@@ -57,9 +61,26 @@
             weaponPanel.TabIndex = 12;
             weaponPanel.Visible = false;
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(79, 102);
+            label6.Name = "label6";
+            label6.Size = new Size(130, 25);
+            label6.TabIndex = 6;
+            label6.Text = "Armor Piercing";
+            label6.Click += label6_Click;
+            // 
+            // apTextBox
+            // 
+            apTextBox.Location = new Point(118, 141);
+            apTextBox.Name = "apTextBox";
+            apTextBox.Size = new Size(69, 31);
+            apTextBox.TabIndex = 5;
+            // 
             // saveButton
             // 
-            saveButton.Location = new Point(96, 132);
+            saveButton.Location = new Point(97, 190);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(112, 34);
             saveButton.TabIndex = 4;
@@ -205,5 +226,7 @@
         private Label label1;
         private Button deleteButton;
         private Button closeButton;
+        private Label label6;
+        private TextBox apTextBox;
     }
 }

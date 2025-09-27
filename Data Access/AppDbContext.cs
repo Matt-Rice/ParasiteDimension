@@ -10,6 +10,7 @@ namespace Thing;
         public DbSet<Enemy> Enemies { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Weapon> Weapons { get; set; }
+        public DbSet<Player> Players { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite("Data Source=app.db");
 
@@ -33,6 +34,11 @@ namespace Thing;
             .WithMany(e => e.WeaponList)
             .HasForeignKey(w => w.EnemyId)
             .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Player>()
+               .HasOne(p => p.Battle)
+               .WithMany(b => b.PlayerList) // Assuming Battle has a collection of Players
+               .HasForeignKey(p => p.BattleId)
+               .OnDelete(DeleteBehavior.Cascade); // Adjust delete behavior as needed
 
     }
 
@@ -46,6 +52,7 @@ namespace Thing;
             {
                 selectedBattle = context.Battles
                     .Include(b => b.EnemyList)
+                    .Include(b => b.PlayerList)
                     .Where(b => b.BattleId == battleId)
                     .FirstOrDefault() ?? throw new NullReferenceException(nameof(addForm));
             }
@@ -144,6 +151,31 @@ namespace Thing;
         return selectedWeapon;
     }
 
+    public Player? GetPlayerById(int playerId)
+    {
+        Player? selectedPlayer;
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                selectedPlayer = context.Players
+                    .Where(p => p.PlayerId == playerId)
+                    .FirstOrDefault() ?? throw new NullReferenceException(nameof(addForm));
+            }
+        }
+        catch (NullReferenceException ex) 
+        { 
+            Console.WriteLine(ex.ToString());
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            return null;
+        }
+        return selectedPlayer;
+    }
+
     #endregion
 
     #region Insert Entities
@@ -213,6 +245,25 @@ namespace Thing;
             using (var context = new AppDbContext())
             {
                 context.Weapons.Add(weapon);
+                context.SaveChanges();
+                success = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return success;
+    }
+
+    public bool InsertPlayer(Player player)
+    {
+        bool success = false;
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                context.Players.Add(player);
                 context.SaveChanges();
                 success = true;
             }
@@ -310,6 +361,25 @@ namespace Thing;
 
         return success;
     }
+        public bool DeletePlayerByID(int playerId)
+    {
+        bool success = false;
+        try
+        {
+            using (var db = new AppDbContext())
+            {
+                var player = db.GetPlayerById(playerId);
+                db.Players.Remove(player);
+                db.SaveChanges();
+                success = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return success;
+    }
 
     #endregion
 
@@ -390,6 +460,25 @@ namespace Thing;
         }
         return success;
     }
+
+    public bool UpdatePlayer(Player player)
+    {
+        bool success = false;
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                context.Players.Update(player);
+                context.SaveChanges();
+                success = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return success;
+    }
     #endregion
 
     #region Get Lists By ID
@@ -448,6 +537,24 @@ namespace Thing;
             MessageBox.Show(ex.ToString());
         }
         return weapons;
+    }
+    public List<Player> GetPlayersByBattleId(int battleId)
+    {
+        List<Player> players = new List<Player>();
+        try
+        {
+            using (var context = new AppDbContext())
+            {
+                players = context.Players
+                    .Where(p => p.BattleId == battleId)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+        }
+        return players;
     }
     #endregion
 }

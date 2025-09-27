@@ -170,11 +170,32 @@ namespace Thing
 
         private void RefreshSkillList()
         {
+            // Save the currently selected SkillId (if any)
+            int? selectedSkillId = null;
+            if (skillListBox.SelectedItem is Skill selectedSkill)
+            {
+                selectedSkillId = selectedSkill.SkillId;
+            }
+
             skillListBox.DataSource = null;
             _selectedEnemy.UpdateSkillList(); // Ensure the enemy's skill list is up to date
-            skillListBox.DataSource = _selectedEnemy.SkillList.ToList();
+            var skills = _selectedEnemy.SkillList.ToList();
+            skillListBox.DataSource = skills;
             skillListBox.DisplayMember = "Name";
             skillListBox.ValueMember = "SkillId";
+
+            // Restore selection if possible
+            if (selectedSkillId.HasValue)
+            {
+                for (int i = 0; i < skills.Count; i++)
+                {
+                    if (skills[i].SkillId == selectedSkillId.Value)
+                    {
+                        skillListBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
         }
 
         private Skill? GetSkillFromListBox()

@@ -40,6 +40,8 @@
             addEnemyButton = new Button();
             deleteEnemyButton = new Button();
             enemyPanel = new Panel();
+            enemyInitiativeTextBox = new TextBox();
+            label14 = new Label();
             label10 = new Label();
             damageTextBox = new TextBox();
             saveEnemyButton = new Button();
@@ -77,12 +79,25 @@
             label1 = new Label();
             enemyNameTextBox = new TextBox();
             enemyNameLabel = new Label();
+            label11 = new Label();
+            playerListBox = new ListBox();
+            addPlayerButton = new Button();
+            deletePlayerButton = new Button();
+            playerPanel = new Panel();
+            playerInitiativeTextBox = new TextBox();
+            label13 = new Label();
+            savePlayerButton = new Button();
+            playerNameTextBox = new TextBox();
+            label12 = new Label();
+            turnOrderButton = new Button();
+            deadCheckBox = new CheckBox();
             enemyPanel.SuspendLayout();
+            playerPanel.SuspendLayout();
             SuspendLayout();
             // 
             // saveButton
             // 
-            saveButton.Location = new Point(1029, 678);
+            saveButton.Location = new Point(1431, 685);
             saveButton.Margin = new Padding(4, 5, 4, 5);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(97, 52);
@@ -134,7 +149,7 @@
             // 
             // cancelButton
             // 
-            cancelButton.Location = new Point(903, 678);
+            cancelButton.Location = new Point(1317, 685);
             cancelButton.Margin = new Padding(4, 5, 4, 5);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(97, 52);
@@ -168,7 +183,7 @@
             // 
             titleLabel.AutoSize = true;
             titleLabel.Font = new Font("Segoe UI Black", 40F, FontStyle.Bold);
-            titleLabel.Location = new Point(283, 8);
+            titleLabel.Location = new Point(523, 9);
             titleLabel.Name = "titleLabel";
             titleLabel.Size = new Size(597, 106);
             titleLabel.TabIndex = 15;
@@ -196,6 +211,8 @@
             // 
             // enemyPanel
             // 
+            enemyPanel.Controls.Add(enemyInitiativeTextBox);
+            enemyPanel.Controls.Add(label14);
             enemyPanel.Controls.Add(label10);
             enemyPanel.Controls.Add(damageTextBox);
             enemyPanel.Controls.Add(saveEnemyButton);
@@ -241,6 +258,23 @@
             enemyPanel.Visible = false;
             enemyPanel.Paint += enemyPanel_Paint;
             // 
+            // enemyInitiativeTextBox
+            // 
+            enemyInitiativeTextBox.Location = new Point(318, 403);
+            enemyInitiativeTextBox.Name = "enemyInitiativeTextBox";
+            enemyInitiativeTextBox.Size = new Size(60, 31);
+            enemyInitiativeTextBox.TabIndex = 85;
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new Point(307, 375);
+            label14.Margin = new Padding(4, 0, 4, 0);
+            label14.Name = "label14";
+            label14.Size = new Size(78, 25);
+            label14.TabIndex = 84;
+            label14.Text = "Initiative";
+            // 
             // label10
             // 
             label10.AutoSize = true;
@@ -259,7 +293,7 @@
             // 
             // saveEnemyButton
             // 
-            saveEnemyButton.Location = new Point(289, 432);
+            saveEnemyButton.Location = new Point(294, 441);
             saveEnemyButton.Margin = new Padding(4, 5, 4, 5);
             saveEnemyButton.Name = "saveEnemyButton";
             saveEnemyButton.Size = new Size(116, 38);
@@ -297,7 +331,7 @@
             // 
             // skillsButton
             // 
-            skillsButton.Location = new Point(43, 432);
+            skillsButton.Location = new Point(32, 442);
             skillsButton.Margin = new Padding(4, 5, 4, 5);
             skillsButton.Name = "skillsButton";
             skillsButton.Size = new Size(74, 38);
@@ -577,11 +611,138 @@
             enemyNameLabel.TabIndex = 51;
             enemyNameLabel.Text = " Enemy Name";
             // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(1331, 154);
+            label11.Margin = new Padding(4, 0, 4, 0);
+            label11.Name = "label11";
+            label11.Size = new Size(67, 25);
+            label11.TabIndex = 52;
+            label11.Text = "Players";
+            label11.Click += label11_Click;
+            // 
+            // playerListBox
+            // 
+            playerListBox.FormattingEnabled = true;
+            playerListBox.ItemHeight = 25;
+            playerListBox.Location = new Point(1232, 182);
+            playerListBox.Name = "playerListBox";
+            playerListBox.Size = new Size(269, 179);
+            playerListBox.TabIndex = 53;
+            playerListBox.SelectedIndexChanged += playerListBox_SelectedIndexChanged;
+            // 
+            // addPlayerButton
+            // 
+            addPlayerButton.Location = new Point(1390, 373);
+            addPlayerButton.Name = "addPlayerButton";
+            addPlayerButton.Size = new Size(111, 58);
+            addPlayerButton.TabIndex = 54;
+            addPlayerButton.Text = "Add Player";
+            addPlayerButton.UseVisualStyleBackColor = true;
+            addPlayerButton.Click += addPlayerButton_Click;
+            // 
+            // deletePlayerButton
+            // 
+            deletePlayerButton.Location = new Point(1232, 376);
+            deletePlayerButton.Name = "deletePlayerButton";
+            deletePlayerButton.Size = new Size(131, 52);
+            deletePlayerButton.TabIndex = 55;
+            deletePlayerButton.Text = "Delete Player";
+            deletePlayerButton.UseVisualStyleBackColor = true;
+            deletePlayerButton.Click += deletePlayerButton_Click;
+            // 
+            // playerPanel
+            // 
+            playerPanel.Controls.Add(deadCheckBox);
+            playerPanel.Controls.Add(playerInitiativeTextBox);
+            playerPanel.Controls.Add(label13);
+            playerPanel.Controls.Add(savePlayerButton);
+            playerPanel.Controls.Add(playerNameTextBox);
+            playerPanel.Controls.Add(label12);
+            playerPanel.Location = new Point(1229, 437);
+            playerPanel.Name = "playerPanel";
+            playerPanel.Size = new Size(272, 235);
+            playerPanel.TabIndex = 56;
+            playerPanel.Visible = false;
+            // 
+            // playerInitiativeTextBox
+            // 
+            playerInitiativeTextBox.Location = new Point(14, 118);
+            playerInitiativeTextBox.Name = "playerInitiativeTextBox";
+            playerInitiativeTextBox.Size = new Size(60, 31);
+            playerInitiativeTextBox.TabIndex = 83;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(3, 90);
+            label13.Margin = new Padding(4, 0, 4, 0);
+            label13.Name = "label13";
+            label13.Size = new Size(78, 25);
+            label13.TabIndex = 82;
+            label13.Text = "Initiative";
+            // 
+            // savePlayerButton
+            // 
+            savePlayerButton.Location = new Point(69, 176);
+            savePlayerButton.Margin = new Padding(4, 5, 4, 5);
+            savePlayerButton.Name = "savePlayerButton";
+            savePlayerButton.Size = new Size(116, 38);
+            savePlayerButton.TabIndex = 86;
+            savePlayerButton.Text = "Save Player";
+            savePlayerButton.UseVisualStyleBackColor = true;
+            savePlayerButton.Click += savePlayerButton_Click;
+            // 
+            // playerNameTextBox
+            // 
+            playerNameTextBox.Location = new Point(57, 43);
+            playerNameTextBox.Name = "playerNameTextBox";
+            playerNameTextBox.Size = new Size(139, 31);
+            playerNameTextBox.TabIndex = 81;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(74, 15);
+            label12.Margin = new Padding(4, 0, 4, 0);
+            label12.Name = "label12";
+            label12.Size = new Size(111, 25);
+            label12.TabIndex = 57;
+            label12.Text = "Player Name";
+            // 
+            // turnOrderButton
+            // 
+            turnOrderButton.Location = new Point(1173, 685);
+            turnOrderButton.Margin = new Padding(4, 5, 4, 5);
+            turnOrderButton.Name = "turnOrderButton";
+            turnOrderButton.Size = new Size(124, 52);
+            turnOrderButton.TabIndex = 57;
+            turnOrderButton.Text = "Turn Order";
+            turnOrderButton.UseVisualStyleBackColor = true;
+            turnOrderButton.Click += turnOrderButton_Click;
+            // 
+            // deadCheckBox
+            // 
+            deadCheckBox.AutoSize = true;
+            deadCheckBox.Location = new Point(132, 116);
+            deadCheckBox.Name = "deadCheckBox";
+            deadCheckBox.Size = new Size(80, 29);
+            deadCheckBox.TabIndex = 87;
+            deadCheckBox.Text = "Dead";
+            deadCheckBox.UseVisualStyleBackColor = true;
+            // 
             // addForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1217, 750);
+            ClientSize = new Size(1541, 751);
+            Controls.Add(turnOrderButton);
+            Controls.Add(playerPanel);
+            Controls.Add(deletePlayerButton);
+            Controls.Add(addPlayerButton);
+            Controls.Add(playerListBox);
+            Controls.Add(label11);
             Controls.Add(enemyPanel);
             Controls.Add(deleteEnemyButton);
             Controls.Add(addEnemyButton);
@@ -600,6 +761,8 @@
             Load += addForm_Load;
             enemyPanel.ResumeLayout(false);
             enemyPanel.PerformLayout();
+            playerPanel.ResumeLayout(false);
+            playerPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -655,5 +818,19 @@
         private Button saveEnemyButton;
         private Label label10;
         private TextBox damageTextBox;
+        private Label label11;
+        private ListBox playerListBox;
+        private Button addPlayerButton;
+        private Button deletePlayerButton;
+        private Panel playerPanel;
+        private Label label12;
+        private TextBox playerNameTextBox;
+        private Button savePlayerButton;
+        private TextBox enemyInitiativeTextBox;
+        private Label label14;
+        private TextBox playerInitiativeTextBox;
+        private Label label13;
+        private Button turnOrderButton;
+        private CheckBox deadCheckBox;
     }
 }

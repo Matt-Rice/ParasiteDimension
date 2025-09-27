@@ -19,6 +19,9 @@ namespace Thing.Models
         public int CurrentHp { get; set; }
         public int MaxWounds { get; set; }
         public int CurrentWounds { get; set; }
+        public bool IsDead => CurrentWounds >= MaxWounds;
+        public string Armor { get; set; } = string.Empty;
+        public string Movement { get; set; } = string.Empty;
         public string Strength { get; set; } = string.Empty;  
         public string Willpower { get; set; } = string.Empty;
         public string Agility { get; set; } = string.Empty;
@@ -28,6 +31,7 @@ namespace Thing.Models
         public string Endurance { get; set; } = string.Empty;
         public List<Skill> SkillList { get; set; } = new();
         public List<Weapon> WeaponList { get; set; } = new();
+        public int Initiative { get; set; } = 0;
         public int BattleId { get; set; }
         public Battle Battle { get; set; }
 
